@@ -42,7 +42,7 @@ open class BMPlayer: UIView {
     /// AVLayerVideoGravityType
     open var videoGravity = AVLayerVideoGravity.resizeAspect {
         didSet {
-            self.playerLayer?.videoGravity = videoGravity
+            playerLayer?.videoGravity = videoGravity
         }
     }
     
@@ -198,7 +198,7 @@ open class BMPlayer: UIView {
      - parameter step: step
      */
     open func addVolume(step: Float = 0.1) {
-        self.volumeViewSlider.value += step
+        volumeViewSlider.value += step
     }
     
     /**
@@ -207,7 +207,7 @@ open class BMPlayer: UIView {
      - parameter step: step
      */
     open func reduceVolume(step: Float = 0.1) {
-        self.volumeViewSlider.value -= step
+        volumeViewSlider.value -= step
     }
     
     /**
@@ -240,60 +240,61 @@ open class BMPlayer: UIView {
         
         // 判断是垂直移动还是水平移动
         switch pan.state {
-        case UIGestureRecognizer.State.began:
+        case .began:
             // 使用绝对值来判断移动的方向
             let x = abs(velocityPoint.x)
             let y = abs(velocityPoint.y)
             
             if x > y {
                 if BMPlayerConf.enablePlaytimeGestures {
-                    self.panDirection = BMPanDirection.horizontal
+                    panDirection = BMPanDirection.horizontal
                     
                     // 给sumTime初值
                     if let player = playerLayer?.player {
                         let time = player.currentTime()
-                        self.sumTime = TimeInterval(time.value) / TimeInterval(time.timescale)
+                        sumTime = TimeInterval(time.value) / TimeInterval(time.timescale)
                     }
                 }
             } else {
-                self.panDirection = BMPanDirection.vertical
-                if locationPoint.x > self.bounds.size.width / 2 {
-                    self.isVolume = true
+                panDirection = BMPanDirection.vertical
+                if locationPoint.x > bounds.size.width / 2 {
+                    isVolume = true
                 } else {
-                    self.isVolume = false
+                    isVolume = false
                 }
             }
             
-        case UIGestureRecognizer.State.changed:
-            switch self.panDirection {
+        case .changed:
+            switch panDirection {
             case BMPanDirection.horizontal:
-                self.horizontalMoved(velocityPoint.x)
+                horizontalMoved(velocityPoint.x)
             case BMPanDirection.vertical:
-                self.verticalMoved(velocityPoint.y)
+                verticalMoved(velocityPoint.y)
             }
             
-        case UIGestureRecognizer.State.ended:
+        case .ended, .cancelled:
             // 移动结束也需要判断垂直或者平移
             // 比如水平移动结束时，要快进到指定位置，如果这里没有判断，当我们调节音量完之后，会出现屏幕跳动的bug
-            switch (self.panDirection) {
+            switch (panDirection) {
             case BMPanDirection.horizontal:
                 controlView.hideSeekToView()
-                isSliderSliding = false
                 if isPlayToTheEnd {
                     isPlayToTheEnd = false
-                    seek(self.sumTime, completion: {[weak self] in
+                    seek(sumTime, completion: {[weak self] in
                         self?.play()
+                        self?.isSliderSliding = false
                     })
                 } else {
-                    seek(self.sumTime, completion: {[weak self] in
+                    seek(sumTime, completion: {[weak self] in
                         self?.autoPlay()
+                        self?.isSliderSliding = false
                     })
                 }
                 // 把sumTime滞空，不然会越加越多
-                self.sumTime = 0.0
+                sumTime = 0.0
                 
             case BMPanDirection.vertical:
-                self.isVolume = false
+                isVolume = false
             }
         default:
             break
@@ -301,10 +302,10 @@ open class BMPlayer: UIView {
     }
     
     fileprivate func verticalMoved(_ value: CGFloat) {
-        if BMPlayerConf.enableVolumeGestures && self.isVolume{
-            self.volumeViewSlider.value -= Float(value / 10000)
+        if BMPlayerConf.enableVolumeGestures && isVolume{
+            volumeViewSlider.value -= Float(value / 10000)
         }
-        else if BMPlayerConf.enableBrightnessGestures && !self.isVolume{
+        else if BMPlayerConf.enableBrightnessGestures && !isVolume{
             UIScreen.main.brightness -= value / 10000
         }
     }
@@ -315,7 +316,7 @@ open class BMPlayer: UIView {
         isSliderSliding = true
         if let playerItem = playerLayer?.playerItem {
             // 每次滑动需要叠加时间，通过一定的比例，使滑动一直处于统一水平
-            self.sumTime = self.sumTime + TimeInterval(value) / 100.0 * (TimeInterval(self.totalDuration)/400)
+            sumTime = sumTime + TimeInterval(value) / 100.0 * (TimeInterval(totalDuration)/400)
             
             let totalTime = playerItem.duration
             
@@ -323,21 +324,21 @@ open class BMPlayer: UIView {
             if totalTime.timescale == 0 { return }
             
             let totalDuration = TimeInterval(totalTime.value) / TimeInterval(totalTime.timescale)
-            if (self.sumTime >= totalDuration) { self.sumTime = totalDuration }
-            if (self.sumTime <= 0) { self.sumTime = 0 }
+            if (sumTime >= totalDuration) { sumTime = totalDuration }
+            if (sumTime <= 0) { sumTime = 0 }
             
             controlView.showSeekToView(to: sumTime, total: totalDuration, isAdd: value > 0)
         }
     }
     
     @objc open func onOrientationChanged() {
-        self.updateUI(isFullScreen)
+        updateUI(isFullScreen)
         delegate?.bmPlayer(player: self, playerOrientChanged: isFullScreen)
         playOrientChanged?(isFullScreen)
     }
     
     @objc fileprivate func fullScreenButtonPressed() {
-        controlView.updateUI(!self.isFullScreen)
+        controlView.updateUI(!isFullScreen)
         if isFullScreen {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
             UIApplication.shared.setStatusBarHidden(false, with: .fade)
@@ -388,7 +389,7 @@ open class BMPlayer: UIView {
     
     // MARK: - 初始化
     fileprivate func initUI() {
-        self.backgroundColor = UIColor.black
+        backgroundColor = UIColor.black
         
         if let customView = customControlView {
             controlView = customView
@@ -404,25 +405,26 @@ open class BMPlayer: UIView {
             make.edges.equalTo(self)
         }
         
-        panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.panDirection(_:)))
-        self.addGestureRecognizer(panGesture)
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(panDirection(_:)))
+        addGestureRecognizer(panGesture)
     }
     
     fileprivate func initUIData() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onOrientationChanged), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onOrientationChanged), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
     }
     
     fileprivate func configureVolume() {
         let volumeView = MPVolumeView()
         for view in volumeView.subviews {
             if let slider = view as? UISlider {
-                self.volumeViewSlider = slider
+                volumeViewSlider = slider
             }
         }
     }
     
     fileprivate func preparePlayer() {
         playerLayer = BMPlayerLayerView()
+        playerLayer!.shouldLoopPlay = BMPlayerConf.shouldLoopPlay
         playerLayer!.videoGravity = videoGravity
         insertSubview(playerLayer!, at: 0)
         playerLayer!.snp.makeConstraints { [weak self](make) in
@@ -431,7 +433,7 @@ open class BMPlayer: UIView {
         }
         playerLayer!.delegate = self
         controlView.showLoader()
-        self.layoutIfNeeded()
+        layoutIfNeeded()
     }
 }
 
@@ -462,12 +464,12 @@ extension BMPlayer: BMPlayerLayerViewDelegate {
             }
             if shouldSeekTo != 0 {
                 seek(shouldSeekTo, completion: {[weak self] in
-                  guard let `self` = self else { return }
-                  if !self.isPauseByUser {
-                      self.play()
-                  } else {
-                      self.pause()
-                  }
+                    guard let `self` = self else { return }
+                    if !self.isPauseByUser {
+                        self.play()
+                    } else {
+                        self.pause()
+                    }
                 })
             }
             
@@ -488,7 +490,7 @@ extension BMPlayer: BMPlayerLayerViewDelegate {
     public func bmPlayer(player: BMPlayerLayerView, playTimeDidChange currentTime: TimeInterval, totalTime: TimeInterval) {
         BMPlayerManager.shared.log("playTimeDidChange - \(currentTime) - \(totalTime)")
         delegate?.bmPlayer(player: self, playTimeDidChange: currentTime, totalTime: totalTime)
-        self.currentPosition = currentTime
+        currentPosition = currentTime
         totalDuration = totalTime
         if isSliderSliding {
             return
@@ -557,18 +559,19 @@ extension BMPlayer: BMPlayerControlViewDelegate {
             isSliderSliding = true
             
         case .touchUpInside :
-            isSliderSliding = false
-            let target = self.totalDuration * Double(slider.value)
+            let target = totalDuration * Double(slider.value)
             
             if isPlayToTheEnd {
                 isPlayToTheEnd = false
                 seek(target, completion: {[weak self] in
-                  self?.play()
+                    self?.play()
+                    self?.isSliderSliding = false
                 })
                 controlView.hidePlayToTheEndView()
             } else {
                 seek(target, completion: {[weak self] in
-                  self?.autoPlay()
+                    self?.autoPlay()
+                    self?.isSliderSliding = false
                 })
             }
         default:
@@ -577,10 +580,10 @@ extension BMPlayer: BMPlayerControlViewDelegate {
     }
     
     open func controlView(controlView: BMPlayerControlView, didChangeVideoAspectRatio: BMPlayerAspectRatio) {
-        self.playerLayer?.aspectRatio = self.aspectRatio
+        playerLayer?.aspectRatio = aspectRatio
     }
     
     open func controlView(controlView: BMPlayerControlView, didChangeVideoPlaybackRate rate: Float) {
-        self.playerLayer?.player?.rate = rate
+        playerLayer?.player?.rate = rate
     }
 }
