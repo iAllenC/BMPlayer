@@ -87,6 +87,8 @@ open class BMPlayerLayerView: UIView {
         }
     }
     
+    open var shouldLoopPlay = false
+    
     var aspectRatio: BMPlayerAspectRatio = .default {
         didSet {
             self.setNeedsLayout()
@@ -328,7 +330,9 @@ open class BMPlayerLayerView: UIView {
     
     // MARK: - Notification Event
     @objc fileprivate func moviePlayDidEnd() {
-        if state != .playedToTheEnd {
+        if shouldLoopPlay {
+            seek(to: 0) { [weak self] in self?.play() }
+        } else if state != .playedToTheEnd {
             if let playerItem = playerItem {
                 delegate?.bmPlayer(player: self,
                                    playTimeDidChange: CMTimeGetSeconds(playerItem.duration),
