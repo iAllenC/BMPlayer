@@ -7,7 +7,7 @@ s.description      = <<-DESC
 Video Player Using Swift, based on AVPlayer, support for the horizontal screen, vertical screen, the upper and lower slide to adjust the volume, the screen brightness, or so slide to adjust the playback progress.
 DESC
 
-s.homepage         = "https://github.com/BrikerMan/BMPlayer"
+s.homepage         = "https://git.dseelab.com:ios/module/tool/bmplayer"
 
 s.license          = 'MIT'
 s.author           = { "Eliyar Eziz" => "eliyar917@gmail.com" }
