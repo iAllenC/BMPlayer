@@ -33,6 +33,9 @@ open class BMPlayerManager {
     /// should auto play
     open var shouldAutoPlay = true
     
+    /// should loop play
+    open var shouldLoopPlay = true
+
     open var topBarShowInCase = BMPlayerTopBarShowCase.always
     
     open var animateDelayTimeInterval = TimeInterval(5)
