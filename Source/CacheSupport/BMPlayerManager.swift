@@ -36,6 +36,9 @@ open class BMPlayerManager {
     /// should loop play
     open var shouldLoopPlay = true
 
+    /// should enable fullscreen action
+    open var enableFullScreen = true
+
     open var topBarShowInCase = BMPlayerTopBarShowCase.always
     
     open var animateDelayTimeInterval = TimeInterval(5)

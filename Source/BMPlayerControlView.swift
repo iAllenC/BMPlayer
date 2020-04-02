@@ -537,6 +537,7 @@ open class BMPlayerControlView: UIView {
         bottomWrapperView.addSubview(progressView)
         bottomWrapperView.addSubview(timeSlider)
         bottomWrapperView.addSubview(fullscreenButton)
+        fullscreenButton.isHidden = !BMPlayerConf.enableFullScreen
         
         playButton.tag = BMPlayerControlView.ButtonType.play.rawValue
         playButton.setImage(BMImageResourcePath("Pod_Asset_BMPlayer_play"),  for: .normal)
