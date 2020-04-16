@@ -216,7 +216,7 @@ open class BMPlayerLayerView: UIView {
         }
     }
     
-    open func seek(to secounds: TimeInterval, completion:(()->Void)?) {
+    open func seek(to secounds: TimeInterval, completion:((Bool)->Void)?) {
         if secounds.isNaN {
             return
         }
@@ -224,10 +224,11 @@ open class BMPlayerLayerView: UIView {
         if self.player?.currentItem?.status == AVPlayerItem.Status.readyToPlay {
             let draggedTime = CMTime(value: Int64(secounds), timescale: 1)
             self.player!.seek(to: draggedTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (finished) in
-                completion?()
+                completion?(finished)
             })
         } else {
             self.shouldSeekTo = secounds
+            completion?(false)
         }
     }
     
@@ -331,7 +332,7 @@ open class BMPlayerLayerView: UIView {
     // MARK: - Notification Event
     @objc fileprivate func moviePlayDidEnd() {
         if shouldLoopPlay {
-            seek(to: 0) { [weak self] in self?.play() }
+            seek(to: 0) { [weak self] in if $0 { self?.play() } }
         } else if state != .playedToTheEnd {
             if let playerItem = playerItem {
                 delegate?.bmPlayer(player: self,
@@ -359,6 +360,7 @@ open class BMPlayerLayerView: UIView {
                         if shouldSeekTo != 0 {
                             print("BMPlayerLayer | Should seek to \(shouldSeekTo)")
                             seek(to: shouldSeekTo, completion: { [weak self] in
+                                guard $0 else { return }
                                 self?.shouldSeekTo = 0
                                 self?.hasReadyToPlay = true
                                 self?.state = .readyToPlay

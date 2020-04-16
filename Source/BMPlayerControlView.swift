@@ -140,6 +140,7 @@ open class BMPlayerControlView: UIView {
      - parameter totalDuration:  total duration
      */
     open func loadedTimeDidChange(loadedDuration: TimeInterval, totalDuration: TimeInterval) {
+        timeSlider.isUserInteractionEnabled = true
         progressView.setProgress(Float(loadedDuration)/Float(totalDuration), animated: true)
     }
     
@@ -536,6 +537,7 @@ open class BMPlayerControlView: UIView {
         bottomWrapperView.addSubview(totalTimeLabel)
         bottomWrapperView.addSubview(progressView)
         bottomWrapperView.addSubview(timeSlider)
+        timeSlider.isUserInteractionEnabled = false
         bottomWrapperView.addSubview(fullscreenButton)
         fullscreenButton.isHidden = !BMPlayerConf.enableFullScreen
         
