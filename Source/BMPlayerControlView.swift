@@ -356,8 +356,7 @@ open class BMPlayerControlView: UIView {
             button.setTitle("\(resource.definitions[button.tag].definition)", for: UIControl.State())
             chooseDefinitionView.addSubview(button)
             button.addTarget(self, action: #selector(onDefinitionSelected(_:)), for: UIControl.Event.touchUpInside)
-            button.snp.makeConstraints({ [weak self](make) in
-                guard let `self` = self else { return }
+            button.snp.makeConstraints({ make in
                 make.top.equalTo(chooseDefinitionView.snp.top).offset(35 * i)
                 make.width.equalTo(50)
                 make.height.equalTo(25)
@@ -621,19 +620,19 @@ open class BMPlayerControlView: UIView {
     
     func addSnapKitConstraint() {
         // Main mask view
-        mainMaskView.snp.makeConstraints { [unowned self](make) in
+        mainMaskView.snp.makeConstraints { make in
             make.edges.equalTo(self)
         }
         
-        maskImageView.snp.makeConstraints { [unowned self](make) in
+        maskImageView.snp.makeConstraints { make in
             make.edges.equalTo(mainMaskView)
         }
 
-        topMaskView.snp.makeConstraints { [unowned self](make) in
+        topMaskView.snp.makeConstraints { make in
             make.top.left.right.equalTo(mainMaskView)
         }
         
-        topWrapperView.snp.makeConstraints { [unowned self](make) in
+        topWrapperView.snp.makeConstraints { make in
             make.height.equalTo(50)
             if #available(iOS 11.0, *) {
               make.top.left.right.equalTo(topMaskView.safeAreaLayoutGuide)
@@ -644,11 +643,11 @@ open class BMPlayerControlView: UIView {
             }
         }
         
-        bottomMaskView.snp.makeConstraints { [unowned self](make) in
+        bottomMaskView.snp.makeConstraints { make in
             make.bottom.left.right.equalTo(mainMaskView)
         }
         
-        bottomWrapperView.snp.makeConstraints { [unowned self](make) in
+        bottomWrapperView.snp.makeConstraints { make in
             make.height.equalTo(50)
             if #available(iOS 11.0, *) {
               make.bottom.left.right.equalTo(bottomMaskView.safeAreaLayoutGuide)
@@ -664,12 +663,12 @@ open class BMPlayerControlView: UIView {
           make.left.bottom.equalToSuperview()
         }
         
-        titleLabel.snp.makeConstraints { [unowned self](make) in
+        titleLabel.snp.makeConstraints { make in
             make.left.equalTo(backButton.snp.right)
             make.centerY.equalTo(backButton)
         }
         
-        chooseDefinitionView.snp.makeConstraints { [unowned self](make) in
+        chooseDefinitionView.snp.makeConstraints { make in
             make.right.equalToSuperview().offset(-20)
             make.top.equalTo(titleLabel.snp.top).offset(-4)
             make.width.equalTo(60)
@@ -683,30 +682,30 @@ open class BMPlayerControlView: UIView {
             make.left.bottom.equalToSuperview()
         }
         
-        currentTimeLabel.snp.makeConstraints { [unowned self](make) in
+        currentTimeLabel.snp.makeConstraints { make in
             make.left.equalTo(playButton.snp.right)
             make.centerY.equalTo(playButton)
             make.width.equalTo(40)
         }
         
-        timeSlider.snp.makeConstraints { [unowned self](make) in
+        timeSlider.snp.makeConstraints { make in
             make.centerY.equalTo(currentTimeLabel)
             make.left.equalTo(currentTimeLabel.snp.right).offset(10).priority(750)
             make.height.equalTo(30)
         }
         
-        progressView.snp.makeConstraints { [unowned self](make) in
+        progressView.snp.makeConstraints { make in
             make.centerY.left.right.equalTo(timeSlider)
             make.height.equalTo(2)
         }
         
-        totalTimeLabel.snp.makeConstraints { [unowned self](make) in
+        totalTimeLabel.snp.makeConstraints { make in
             make.centerY.equalTo(currentTimeLabel)
             make.left.equalTo(timeSlider.snp.right).offset(5)
             make.width.equalTo(40)
         }
     
-        fullscreenButton.snp.makeConstraints { [unowned self](make) in
+        fullscreenButton.snp.makeConstraints { make in
             make.width.equalTo(50)
             make.height.equalTo(50)
             make.centerY.equalTo(currentTimeLabel)
@@ -714,41 +713,41 @@ open class BMPlayerControlView: UIView {
             make.right.equalToSuperview()
         }
         
-        loadingIndicator.snp.makeConstraints { [unowned self](make) in
+        loadingIndicator.snp.makeConstraints { make in
             make.center.equalTo(mainMaskView)
         }
         
         // View to show when slide to seek
-        seekToView.snp.makeConstraints { [unowned self](make) in
+        seekToView.snp.makeConstraints { make in
             make.center.equalTo(snp.center)
             make.width.equalTo(100)
             make.height.equalTo(40)
         }
         
-        seekToViewImage.snp.makeConstraints { [unowned self](make) in
+        seekToViewImage.snp.makeConstraints { make in
             make.left.equalTo(seekToView.snp.left).offset(15)
             make.centerY.equalTo(seekToView.snp.centerY)
             make.height.equalTo(15)
             make.width.equalTo(25)
         }
         
-        seekToLabel.snp.makeConstraints { [unowned self](make) in
+        seekToLabel.snp.makeConstraints { make in
             make.left.equalTo(seekToViewImage.snp.right).offset(10)
             make.centerY.equalTo(seekToView.snp.centerY)
         }
 
-        replayButton.snp.makeConstraints { [unowned self](make) in
+        replayButton.snp.makeConstraints { make in
             make.center.equalTo(mainMaskView)
             make.width.height.equalTo(50)
         }
 
-        subtitleBackView.snp.makeConstraints { [unowned self](make) in
+        subtitleBackView.snp.makeConstraints { make in
             make.bottom.equalTo(snp.bottom).offset(-5)
             make.centerX.equalTo(snp.centerX)
             make.width.lessThanOrEqualTo(snp.width).offset(-10).priority(750)
         }
         
-        subtitleLabel.snp.makeConstraints { [unowned self](make) in
+        subtitleLabel.snp.makeConstraints { make in
             make.left.equalTo(subtitleBackView.snp.left).offset(10)
             make.right.equalTo(subtitleBackView.snp.right).offset(-10)
             make.top.equalTo(subtitleBackView.snp.top).offset(2)

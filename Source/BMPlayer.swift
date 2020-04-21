@@ -56,8 +56,6 @@ open class BMPlayer: UIView {
     open var playTimeDidChange:((TimeInterval, TimeInterval) -> Void)?
 
     //Closure fired when play state chaged
-    @available(*, deprecated, message: "Use newer `isPlayingStateChanged`")
-    open var playStateDidChange:((Bool) -> Void)?
 
     open var playOrientChanged:((Bool) -> Void)?
 
@@ -441,7 +439,6 @@ extension BMPlayer: BMPlayerLayerViewDelegate {
     public func bmPlayer(player: BMPlayerLayerView, playerIsPlaying playing: Bool) {
         controlView.playStateDidChange(isPlaying: playing)
         delegate?.bmPlayer(player: self, playerIsPlaying: playing)
-        playStateDidChange?(player.isPlaying)
         isPlayingStateChanged?(player.isPlaying)
     }
     
