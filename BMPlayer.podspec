@@ -30,8 +30,8 @@ s.subspec 'Full' do |full|
     full.frameworks   = 'UIKit', 'AVFoundation'
 
     full.dependency 'BMPlayer/Core'
-    full.dependency 'SnapKit', '~> 5.0'
-    full.dependency 'NVActivityIndicatorView', '~> 4.7'
+    full.dependency 'SnapKit', '>= 5.0'
+    full.dependency 'NVActivityIndicatorView', '>= 4.7'
 end
 
 s.subspec 'CacheSupport' do |cache|
