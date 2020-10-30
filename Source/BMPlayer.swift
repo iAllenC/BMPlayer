@@ -353,6 +353,7 @@ open class BMPlayer: UIView {
         playerLayer?.pause()
         playerLayer?.prepareToDeinit()
         NotificationCenter.default.removeObserver(self, name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
+        NotificationCenter.default.removeObserver(activeObserver)
     }
     
     
@@ -420,6 +421,8 @@ open class BMPlayer: UIView {
         }
     }
     
+    private var activeObserver: NSObjectProtocol?
+    
     fileprivate func preparePlayer() {
         playerLayer = BMPlayerLayerView()
         playerLayer!.shouldLoopPlay = BMPlayerConf.shouldLoopPlay
@@ -432,6 +435,14 @@ open class BMPlayer: UIView {
         playerLayer!.delegate = self
         controlView.showLoader()
         layoutIfNeeded()
+        activeObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self]_ in
+            guard let self = self else { return }
+            if self.isPlaying { self.play() }
+        }
     }
 }
 
