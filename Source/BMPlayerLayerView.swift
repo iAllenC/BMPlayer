@@ -170,15 +170,12 @@ open class BMPlayerLayerView: UIView {
         super.layoutSubviews()
         switch self.aspectRatio {
         case .default:
-            self.playerLayer?.videoGravity = AVLayerVideoGravity.resizeAspect
             self.playerLayer?.frame  = self.bounds
             break
         case .sixteen2NINE:
-            self.playerLayer?.videoGravity = AVLayerVideoGravity.resize
             self.playerLayer?.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.width/(16/9))
             break
         case .four2THREE:
-            self.playerLayer?.videoGravity = AVLayerVideoGravity.resize
             let _w = self.bounds.height * 4 / 3
             self.playerLayer?.frame = CGRect(x: (self.bounds.width - _w )/2, y: 0, width: _w, height: self.bounds.height)
             break
