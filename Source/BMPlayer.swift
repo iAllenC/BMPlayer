@@ -339,12 +339,12 @@ open class BMPlayer: UIView {
         controlView.updateUI(!isFullScreen)
         if isFullScreen {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-            UIApplication.shared.setStatusBarHidden(false, with: .fade)
-            UIApplication.shared.statusBarOrientation = .portrait
+//            UIApplication.shared.setStatusBarHidden(false, with: .fade)
+//            UIApplication.shared.statusBarOrientation = .portrait
         } else {
             UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
-            UIApplication.shared.setStatusBarHidden(false, with: .fade)
-            UIApplication.shared.statusBarOrientation = .landscapeRight
+//            UIApplication.shared.setStatusBarHidden(false, with: .fade)
+//            UIApplication.shared.statusBarOrientation = .landscapeRight
         }
     }
     
@@ -353,7 +353,7 @@ open class BMPlayer: UIView {
         playerLayer?.pause()
         playerLayer?.prepareToDeinit()
         NotificationCenter.default.removeObserver(self, name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
-        NotificationCenter.default.removeObserver(activeObserver)
+        NotificationCenter.default.removeObserver(activeObserver as Any)
     }
     
     
@@ -367,12 +367,7 @@ open class BMPlayer: UIView {
         configureVolume()
         preparePlayer()
     }
-    
-    @available(*, deprecated:3.0, message:"Use newer init(customControlView:_)")
-    public convenience init(customControllView: BMPlayerControlView?) {
-        self.init(customControlView: customControllView)
-    }
-    
+        
     public init(customControlView: BMPlayerControlView?) {
         super.init(frame:CGRect.zero)
         self.customControlView = customControlView
