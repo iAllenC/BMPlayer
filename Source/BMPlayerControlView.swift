@@ -104,8 +104,20 @@ open class BMPlayerControlView: UIView {
     open var subtitleBackView = UIView()
     open var subtileAttribute: [NSAttributedString.Key : Any]?
     
+    /// Loading text
+    open var loadingText: String? {
+        didSet {
+            loadingLabel.text = loadingText
+        }
+    }
     /// Activty Indector for loading
     open var loadingIndicator  = NVActivityIndicatorView(frame:  CGRect(x: 0, y: 0, width: 30, height: 30))
+    open var loadingLabel: UILabel = {
+        let loadingLabel = UILabel()
+        loadingLabel.textColor = .white
+        loadingLabel.font = .systemFont(ofSize: 12)
+        return loadingLabel
+    }()
     
     open var seekToView       = UIView()
     open var seekToViewImage  = UIImageView()
@@ -298,10 +310,12 @@ open class BMPlayerControlView: UIView {
     
     open func showLoader() {
         loadingIndicator.isHidden = false
+        loadingLabel.isHidden = false
         loadingIndicator.startAnimating()
     }
     
     open func hideLoader() {
+        loadingLabel.isHidden = true
         loadingIndicator.isHidden = true
     }
     
@@ -314,19 +328,18 @@ open class BMPlayerControlView: UIView {
     }
     
     open func showCover(url: URL?) {
-        if let url = url {
-            DispatchQueue.global(qos: .default).async { [weak self] in
-                let data = try? Data(contentsOf: url)
-                DispatchQueue.main.async(execute: { [weak self] in
-                  guard let `self` = self else { return }
-                    if let data = data {
-                        self.maskImageView.image = UIImage(data: data)
-                    } else {
-                        self.maskImageView.image = nil
-                    }
-                    self.hideLoader()
-                });
-            }
+        guard let url = url else { return }
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            let data = try? Data(contentsOf: url)
+            DispatchQueue.main.async(execute: { [weak self] in
+                guard let self = self else { return }
+                if let data = data {
+                    self.maskImageView.image = UIImage(data: data)
+                } else {
+                    self.maskImageView.image = nil
+                }
+                self.hideLoader()
+            });
         }
     }
     
@@ -582,7 +595,7 @@ open class BMPlayerControlView: UIView {
         fullscreenButton.addTarget(self, action: #selector(onButtonPressed(_:)), for: .touchUpInside)
         
         mainMaskView.addSubview(loadingIndicator)
-        
+        mainMaskView.addSubview(loadingLabel)
         loadingIndicator.type  = BMPlayerConf.loaderType
         loadingIndicator.color = BMPlayerConf.tintColor
         
@@ -715,6 +728,10 @@ open class BMPlayerControlView: UIView {
         
         loadingIndicator.snp.makeConstraints { make in
             make.center.equalTo(mainMaskView)
+        }
+        loadingLabel.snp.makeConstraints { make in
+            make.centerX.equalTo(loadingIndicator)
+            make.top.equalTo(loadingIndicator.snp.bottom).offset(5)
         }
         
         // View to show when slide to seek
